@@ -7,9 +7,17 @@ package V.sales;
 
 import C.sales.Controller;
 import M.sales.Invoice;
+import M.sales.Line;
 import M.sales.InvoicesTableModel;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 
 /**
@@ -133,6 +141,11 @@ public class MainInvoiceFrame extends javax.swing.JFrame {
         jMenu1.add(loadFileMenuItem);
 
         saveFileMenuItem.setText("Save File");
+        saveFileMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveFileMenuItemActionPerformed(evt);
+            }
+        });
         jMenu1.add(saveFileMenuItem);
 
         jMenuBar1.add(jMenu1);
@@ -219,6 +232,15 @@ public class MainInvoiceFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void saveFileMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveFileMenuItemActionPerformed
+        try {
+            // TODO add your handling code here:
+            SaveFiles();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(MainInvoiceFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_saveFileMenuItemActionPerformed
 
     /**
      * @param args the command line arguments
@@ -342,5 +364,40 @@ public class MainInvoiceFrame extends javax.swing.JFrame {
         return ++num;
     }
     
+    private void SaveFiles() throws FileNotFoundException {
+        JOptionPane.showMessageDialog(this, "Please Chosce File Header to Save", "Invooice Header", JOptionPane.WARNING_MESSAGE);
+        JFileChooser fileChoosers = new JFileChooser();
+        int option = fileChoosers.showSaveDialog(this);
+        if (option == JFileChooser.APPROVE_OPTION) {
+            File Csvfile = fileChoosers.getSelectedFile();
+            PrintWriter file = new PrintWriter(Csvfile);
+
+            for (Invoice header : invoices) {
+                file.printf("%d,%s,%s%n", header.getNum(),header.getDate(), header.getCustomer());
+                //file.println();
+            }
+            file.close();
+            JOptionPane.showMessageDialog(this, "Successfully Header Saved", "Information", JOptionPane.INFORMATION_MESSAGE);
+        }
+        JOptionPane.showMessageDialog(this, "Please Chosce File Line to Save", "Invooice Line", JOptionPane.WARNING_MESSAGE);
+        fileChoosers = new JFileChooser();
+        option = fileChoosers.showSaveDialog(this);
+        if (option == JFileChooser.APPROVE_OPTION) {
+            File Csvfilee = fileChoosers.getSelectedFile();
+            PrintWriter FileLines = new PrintWriter(Csvfilee);
+
+            for (Invoice header : invoices) {
+                for (Line Lines : header.getLines()) {
+                    FileLines.printf("%d,%s,%f,%d%n",Lines.getInvoice(), 
+                            Lines.getItem(), Lines.getPrice(), Lines.getCount());
+                    //FileLines.println();
+                }
+            }
+            FileLines.close();
+            JOptionPane.showMessageDialog(this, "Successfully Lines Saved", "Information", JOptionPane.INFORMATION_MESSAGE);
+        }
+    
     
 }
+}
+    
